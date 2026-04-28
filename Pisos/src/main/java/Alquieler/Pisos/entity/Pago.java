@@ -1,4 +1,4 @@
-package com.alquilaya.entity;
+package Alquieler.Pisos.entity;
 
 import jakarta.persistence.*;
 import lombok.Getter;

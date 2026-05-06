@@ -1,5 +1,6 @@
 package Alquieler.Pisos.config;
 
+import Alquieler.Pisos.entity.Inmueble;
 import Alquieler.Pisos.entity.Inquilino;
 import Alquieler.Pisos.entity.Propietario;
 import Alquieler.Pisos.repository.UsuarioRepository;
@@ -126,7 +127,7 @@ public class DataLoader {
             loft.setValoracion(4.7);
             inmuebleService.darDeAltaInmueble(loft);
 
-            log.info("✅ Datos de demostración cargados.");
+            log.info(" Datos de demostración cargados.");
             log.info("   Propietarios: carlos@demo.com / lucia@demo.com (pass: password123)");
             log.info("   Inquilinos:   ana@demo.com / miguel@demo.com  (pass: password123)");
         };

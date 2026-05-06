@@ -8,9 +8,9 @@ import lombok.NoArgsConstructor;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Inquilino: usuario que busca y reserva inmuebles.
- */
+
+//Inquilino: usuario que busca y reserva inmuebles.
+
 @Entity
 @DiscriminatorValue("INQUILINO")
 @Getter
@@ -24,7 +24,7 @@ public class Inquilino extends Usuario {
     @Column(nullable = false)
     private int numResenas = 0;
 
-    /** Lista de deseos: inmuebles guardados por el inquilino. */
+    //Lista de deseos: inmuebles guardados por el inquilino.
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
         name = "lista_deseos",

@@ -10,10 +10,6 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
-/**
- * Superclase del dominio de usuarios.
- * Herencia por tabla única (SINGLE_TABLE) con discriminator.
- */
 @Entity
 @Table(name = "usuarios")
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)

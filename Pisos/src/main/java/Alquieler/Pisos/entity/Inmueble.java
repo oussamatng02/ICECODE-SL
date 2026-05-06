@@ -9,9 +9,9 @@ import lombok.NoArgsConstructor;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Entidad que representa un inmueble ofertado por un propietario.
- */
+
+//Entidad que representa un inmueble ofertado por un propietario.
+ 
 @Entity
 @Table(name = "inmuebles")
 @Getter
@@ -28,9 +28,9 @@ public class Inmueble {
     }
 
     public enum PoliticaCancelacion {
-        FLEXIBLE,    // Reembolso hasta 24h antes
-        MODERADA,    // Reembolso hasta 7 días antes
-        ESTRICTA     // Sin reembolso
+        FLEXIBLE,    
+        MODERADA,   
+        ESTRICTA     
     }
 
     @Id

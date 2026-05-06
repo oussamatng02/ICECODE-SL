@@ -12,9 +12,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-/**
- * Panel del propietario: gestión de inmuebles, reservas y solicitudes.
- */
+
 @Controller
 @RequestMapping("/propietario")
 @RequiredArgsConstructor
@@ -24,7 +22,7 @@ public class PropietarioController {
     private final InmuebleService inmuebleService;
     private final ReservaService reservaService;
 
-    /** Panel principal del propietario. */
+  
     @GetMapping("/panel")
     public String panel(@AuthenticationPrincipal UserDetails userDetails, Model model) {
         Propietario propietario = obtenerPropietario(userDetails);
@@ -37,7 +35,7 @@ public class PropietarioController {
         return "propietario/panel";
     }
 
-    /** Acepta una solicitud de reserva. */
+    // Acepta una solicitud de reserva.
     @PostMapping("/solicitudes/{id}/aceptar")
     public String aceptarSolicitud(@PathVariable Long id,
                                     @RequestParam(required = false) String mensaje,
@@ -51,7 +49,7 @@ public class PropietarioController {
         return "redirect:/propietario/panel";
     }
 
-    /** Rechaza una solicitud de reserva. */
+    // Rechaza una solicitud de reserva.
     @PostMapping("/solicitudes/{id}/rechazar")
     public String rechazarSolicitud(@PathVariable Long id,
                                      @RequestParam(required = false) String mensaje,
@@ -65,7 +63,7 @@ public class PropietarioController {
         return "redirect:/propietario/panel";
     }
 
-    /** Desactiva un inmueble del propietario. */
+    // Desactiva un inmueble del propietario.
     @PostMapping("/inmuebles/{id}/desactivar")
     public String desactivarInmueble(@PathVariable Long id,
                                       @AuthenticationPrincipal UserDetails userDetails,

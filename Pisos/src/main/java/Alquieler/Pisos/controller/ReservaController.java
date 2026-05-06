@@ -13,9 +13,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.time.LocalDate;
 
-/**
- * GestorReservas: gestiona los dos flujos de reserva (inmediata y solicitud).
- */
+
 @Controller
 @RequestMapping("/reservas")
 @RequiredArgsConstructor
@@ -24,7 +22,6 @@ public class ReservaController {
     private final ReservaService reservaService;
     private final UsuarioService usuarioService;
 
-    /** Lista de reservas del inquilino autenticado. */
     @GetMapping("/mis-reservas")
     public String misReservas(@AuthenticationPrincipal UserDetails userDetails, Model model) {
         Inquilino inquilino = obtenerInquilino(userDetails);
@@ -32,7 +29,6 @@ public class ReservaController {
         return "reserva/mis-reservas";
     }
 
-    /** Detalle de una reserva. */
     @GetMapping("/{id}")
     public String detalleReserva(@PathVariable Long id, Model model) {
         Reserva reserva = reservaService.obtenerReserva(id)
@@ -41,9 +37,6 @@ public class ReservaController {
         return "reserva/detalle";
     }
 
-    // ─── FLUJO INMEDIATA ──────────────────────────────────────────────────
-
-    /** Formulario de reserva inmediata (paso previo al pago). */
     @GetMapping("/nueva/{inmuebleId}")
     public String formularioReserva(@PathVariable Long inmuebleId,
                                      @RequestParam(required = false) String entrada,
@@ -55,7 +48,6 @@ public class ReservaController {
         return "reserva/nueva-reserva";
     }
 
-    /** Procesa la creación de una reserva inmediata → redirige al pago. */
     @PostMapping("/nueva/inmediata")
     public String crearReservaInmediata(
             @AuthenticationPrincipal UserDetails userDetails,
@@ -78,9 +70,6 @@ public class ReservaController {
         }
     }
 
-    // ─── FLUJO SOLICITUD ──────────────────────────────────────────────────
-
-    /** Envía una solicitud de reserva al propietario. */
     @PostMapping("/nueva/solicitud")
     public String crearSolicitud(
             @AuthenticationPrincipal UserDetails userDetails,
@@ -107,7 +96,6 @@ public class ReservaController {
         }
     }
 
-    /** Cancelar una reserva propia. */
     @PostMapping("/{id}/cancelar")
     public String cancelarReserva(@PathVariable Long id,
                                    @AuthenticationPrincipal UserDetails userDetails,
@@ -122,7 +110,7 @@ public class ReservaController {
         return "redirect:/reservas/mis-reservas";
     }
 
-    /** Página de confirmación tras pago exitoso. */
+
     @GetMapping("/{id}/confirmacion")
     public String paginaConfirmacion(@PathVariable Long id, Model model) {
         Reserva reserva = reservaService.obtenerReserva(id)
@@ -131,7 +119,6 @@ public class ReservaController {
         return "reserva/confirmacion";
     }
 
-    // ─── HELPER ───────────────────────────────────────────────────────────
 
     private Inquilino obtenerInquilino(UserDetails userDetails) {
         return (Inquilino) usuarioService

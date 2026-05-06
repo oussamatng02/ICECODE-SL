@@ -8,9 +8,9 @@ import lombok.NoArgsConstructor;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Propietario: usuario que oferta inmuebles.
- */
+
+//Propietario: usuario que oferta inmuebles.
+
 @Entity
 @DiscriminatorValue("PROPIETARIO")
 @Getter
@@ -38,7 +38,7 @@ public class Propietario extends Usuario {
         return inmuebles.size();
     }
 
-    /** Actualiza la valoración media al recibir una nueva reseña. */
+    // Actualiza la valoración media al recibir una nueva reseña.
     public void actualizarValoracion(double nuevaValoracion) {
         this.valoracion = ((this.valoracion * this.numResenas) + nuevaValoracion) / (this.numResenas + 1);
         this.numResenas++;

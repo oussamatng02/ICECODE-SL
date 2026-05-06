@@ -7,9 +7,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-/**
- * Controller de autenticación: registro e inicio de sesión.
- */
+
 @Controller
 @RequestMapping("/auth")
 @RequiredArgsConstructor

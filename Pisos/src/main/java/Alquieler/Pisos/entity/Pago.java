@@ -7,10 +7,10 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
-/**
- * Entidad que gestiona el pago de una reserva.
- * Métodos soportados: Tarjeta (crédito/débito) y PayPal.
- */
+
+//Entidad que gestiona el pago de una reserva.
+//Métodos soportados: Tarjeta (crédito/débito) y PayPal.
+ 
 @Entity
 @Table(name = "pagos")
 @Getter
@@ -41,7 +41,6 @@ public class Pago {
     @Column(nullable = false, length = 15)
     private EstadoPago estado = EstadoPago.PENDIENTE;
 
-    /** Referencia externa de la pasarela de pago (ej. PayPal transaction ID) */
     @Column(length = 100)
     private String referenciaExterna;
 

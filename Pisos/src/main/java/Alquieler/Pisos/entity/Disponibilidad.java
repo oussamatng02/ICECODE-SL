@@ -8,10 +8,7 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 
-/**
- * Periodos de disponibilidad de un inmueble.
- * Se bloquea automáticamente al confirmar una reserva.
- */
+
 @Entity
 @Table(name = "disponibilidades")
 @Getter
@@ -44,7 +41,7 @@ public class Disponibilidad {
         this.inmueble = inmueble;
     }
 
-    /** Verifica si un rango de fechas se solapa con este periodo. */
+    // Verifica si un rango de fechas se solapa con este periodo.
     public boolean seSolapa(LocalDate entrada, LocalDate salida) {
         return !entrada.isAfter(this.fechaFin) && !salida.isBefore(this.fechaInicio);
     }

@@ -10,10 +10,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 
-/**
- * Entidad central del sistema. Representa una reserva confirmada.
- * Puede originarse de dos flujos: INMEDIATA o SOLICITUD (tras aceptación del propietario).
- */
+
 @Entity
 @Table(name = "reservas")
 @Getter

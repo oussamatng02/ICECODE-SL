@@ -17,9 +17,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import java.time.LocalDate;
 import java.util.List;
 
-/**
- * GestorInmuebles + GestorBúsqueda: búsqueda pública, detalle y alta de propiedades.
- */
+
 @Controller
 @RequiredArgsConstructor
 public class InmuebleController {
@@ -28,14 +26,12 @@ public class InmuebleController {
     private final UsuarioService usuarioService;
     private final ListaDeseosService listaDeseosService;
 
-    /** Página principal: listado de inmuebles disponibles. */
     @GetMapping("/")
     public String home(Model model) {
         model.addAttribute("inmuebles", inmuebleService.listarTodos());
         return "inmueble/listado";
     }
 
-    /** Búsqueda con filtros avanzados. */
     @GetMapping("/inmuebles/buscar")
     public String buscar(
             @RequestParam(required = false) String ubicacion,
@@ -95,7 +91,7 @@ public class InmuebleController {
         return "inmueble/detalle";
     }
 
-    // ─── PROPIETARIO: ALTA Y GESTIÓN ──────────────────────────────────────
+    //PROPIETARIO: ALTA Y GESTIÓN 
 
     @GetMapping("/propietario/inmuebles/nuevo")
     public String nuevoInmuebleForm(Model model) {

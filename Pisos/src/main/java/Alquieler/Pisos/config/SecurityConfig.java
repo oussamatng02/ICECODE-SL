@@ -11,9 +11,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
-/**
- * Configuración de seguridad de la aplicación.
- */
+
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor

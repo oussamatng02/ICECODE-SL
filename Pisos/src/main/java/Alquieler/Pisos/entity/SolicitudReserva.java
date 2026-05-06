@@ -9,10 +9,7 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
-/**
- * Solicitud de reserva sujeta a confirmación del propietario.
- * Flujo: Inquilino envía solicitud → Propietario acepta/rechaza → si acepta, se crea Reserva.
- */
+
 @Entity
 @Table(name = "solicitudes_reserva")
 @Getter

@@ -12,12 +12,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
-/**
- * GestorReservas: gestiona los dos flujos de reserva.
- *
- * Flujo INMEDIATA:  crearReservaInmediata() → procesarPago() → confirmar()
- * Flujo SOLICITUD:  crearSolicitud() → propietario acepta → crearReservaDesdeSolicitud()
- */
+
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -28,7 +23,6 @@ public class ReservaService {
     private final InmuebleRepository inmuebleRepository;
     private final NotificacionService notificacionService;
 
-    // ─── FLUJO INMEDIATA ───────────────────────────────────────────────────
 
     /**
      * Crea una reserva inmediata (pago directo sin confirmación del propietario).
@@ -47,9 +41,8 @@ public class ReservaService {
         return reserva;
     }
 
-    /**
-     * Confirma la reserva tras completar el pago.
-     */
+//Confirma la reserva tras completar el pago.
+    
     public Reserva confirmarTrasPago(Long reservaId) {
         Reserva reserva = obtenerReservaOFallar(reservaId);
         reserva.confirmar();
@@ -58,11 +51,8 @@ public class ReservaService {
         return reserva;
     }
 
-    // ─── FLUJO SOLICITUD ───────────────────────────────────────────────────
 
-    /**
-     * El inquilino envía una solicitud de reserva al propietario.
-     */
+
     public SolicitudReserva crearSolicitud(Long inmuebleId, Inquilino inquilino,
                                             LocalDate entrada, LocalDate salida,
                                             String mensaje) {
@@ -77,9 +67,9 @@ public class ReservaService {
         return solicitud;
     }
 
-    /**
-     * El propietario acepta la solicitud → se genera una Reserva confirmada.
-     */
+    
+   // El propietario acepta la solicitud → se genera una Reserva confirmada.
+    
     public Reserva aceptarSolicitud(Long solicitudId, String mensajePropietario) {
         SolicitudReserva solicitud = obtenerSolicitudOFallar(solicitudId);
         if (!solicitud.isPendiente()) {
@@ -107,9 +97,9 @@ public class ReservaService {
         return reserva;
     }
 
-    /**
-     * El propietario rechaza la solicitud.
-     */
+    
+     //El propietario rechaza la solicitud.
+    
     public SolicitudReserva rechazarSolicitud(Long solicitudId, String mensajePropietario) {
         SolicitudReserva solicitud = obtenerSolicitudOFallar(solicitudId);
         if (!solicitud.isPendiente()) {
@@ -121,7 +111,7 @@ public class ReservaService {
         return solicitud;
     }
 
-    // ─── CANCELACIÓN ───────────────────────────────────────────────────────
+    // CANCELACIÓN 
 
     public Reserva cancelarReserva(Long reservaId, Long usuarioId) {
         Reserva reserva = obtenerReservaOFallar(reservaId);
@@ -136,7 +126,7 @@ public class ReservaService {
         return reserva;
     }
 
-    // ─── CONSULTAS ─────────────────────────────────────────────────────────
+    //  CONSULTAS
 
     @Transactional(readOnly = true)
     public List<Reserva> listarPorInquilino(Inquilino inquilino) {
@@ -158,7 +148,7 @@ public class ReservaService {
         return reservaRepository.findById(id);
     }
 
-    // ─── HELPERS PRIVADOS ──────────────────────────────────────────────────
+ 
 
     private Inmueble obtenerInmuebleOFallar(Long id) {
         return inmuebleRepository.findById(id)

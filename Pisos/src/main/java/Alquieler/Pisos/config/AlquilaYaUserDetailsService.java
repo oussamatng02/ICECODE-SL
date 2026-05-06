@@ -13,10 +13,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-/**
- * Implementación de UserDetailsService para Spring Security.
- * Carga el usuario por email y asigna el rol según el tipo.
- */
+
 @Service
 @RequiredArgsConstructor
 public class AlquilaYaUserDetailsService implements UserDetailsService {

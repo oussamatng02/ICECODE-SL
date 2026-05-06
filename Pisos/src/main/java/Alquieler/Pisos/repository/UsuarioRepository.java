@@ -6,9 +6,9 @@ import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 
-/**
- * DAO para Usuario. Spring Data JPA genera la implementación en tiempo de ejecución.
- */
+
+//DAO para Usuario. Spring Data JPA genera la implementación en tiempo de ejecución.
+ 
 @Repository
 public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
 

@@ -10,9 +10,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-/**
- * GestorPagos: procesa pagos con tarjeta (crédito/débito) y PayPal.
- */
+
 @Controller
 @RequestMapping("/pagos")
 @RequiredArgsConstructor
@@ -21,7 +19,7 @@ public class PagoController {
     private final PagoService pagoService;
     private final ReservaService reservaService;
 
-    /** Formulario de pago para una reserva pendiente. */
+    // Formulario de pago para una reserva pendiente.
     @GetMapping("/procesar/{reservaId}")
     public String formularioPago(@PathVariable Long reservaId, Model model) {
         Reserva reserva = reservaService.obtenerReserva(reservaId)
@@ -31,7 +29,7 @@ public class PagoController {
         return "reserva/pago";
     }
 
-    /** Procesa el pago: crea el registro y simula confirmación de pasarela. */
+    // Procesa el pago: crea el registro y simula confirmación de pasarela.
     @PostMapping("/procesar/{reservaId}")
     public String procesarPago(
             @PathVariable Long reservaId,
@@ -49,7 +47,7 @@ public class PagoController {
         }
     }
 
-    /** Página de confirmación tras pago exitoso. */
+    // Página de confirmación tras pago exitoso.
     @GetMapping("/{reservaId}/confirmacion")
     public String confirmacion(@PathVariable Long reservaId, Model model) {
         // redirigir desde /reservas/{id}/confirmacion

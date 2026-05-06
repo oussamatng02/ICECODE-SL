@@ -1,6 +1,4 @@
 package Alquieler.Pisos.config;
-
-import Alquieler.Pisos.entity.Inquilino;
 import Alquieler.Pisos.entity.Propietario;
 import Alquieler.Pisos.entity.Usuario;
 import Alquieler.Pisos.repository.UsuarioRepository;

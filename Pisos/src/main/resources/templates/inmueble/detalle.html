@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security" lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title th:text="${inmueble.titulo} + ' · AlquilaYa'">Detalle · AlquilaYa</title>
+  <link rel="stylesheet" th:href="@{/css/main.css}"/>
+</head>
+<body>
+
+<div th:replace="~{fragments/layout :: navbar}"></div>
+
+<main class="container">
+  <div style="padding:1.25rem 0 .5rem;">
+    <a th:href="@{/}" style="font-size:.875rem; color:var(--color-text-2);">← Volver</a>
+  </div>
+
+  <div th:replace="~{fragments/layout :: alertas}"></div>
+
+  <!-- Imagen placeholder -->
+  <div style="height:340px; background:linear-gradient(135deg,#e0e7ff,#fef3c7);
+              border-radius:var(--radius-lg); display:flex; align-items:center;
+              justify-content:center; font-size:5rem; margin-bottom:1.5rem;">
+    <span th:switch="${inmueble.tipo.name()}">
+      <span th:case="'VIVIENDA_COMPLETA'">🏠</span>
+      <span th:case="'HABITACION_PRIVADA'">🛏</span>
+      <span th:case="*">🏘</span>
+    </span>
+  </div>
+
+  <div class="detail-layout">
+    <!-- ─── COLUMNA IZQUIERDA ──────────────────────────────── -->
+    <div>
+      <div class="detail-header">
+        <h1 class="detail-title" th:text="${inmueble.titulo}">Título del inmueble</h1>
+        <div class="detail-meta">
+          <span>📍 <span th:text="${inmueble.ubicacion}"></span></span>
+          <span>👥 Hasta <span th:text="${inmueble.capacidadMaxima}"></span> persona(s)</span>
+          <span>⭐ <span th:text="${#numbers.formatDecimal(inmueble.valoracion,1,1)}">0.0</span></span>
+          <span th:if="${inmueble.tipoFlujo.name()=='INMEDIATA'}" class="badge badge-green">⚡ Reserva inmediata</span>
+          <span th:if="${inmueble.tipoFlujo.name()=='SOLICITUD'}"  class="badge badge-amber">📋 Solicitud</span>
+        </div>
+      </div>
+
+      <!-- Anfitrión -->
+      <div style="display:flex; align-items:center; gap:.75rem; padding:1.25rem 0;
+                  border-top:1px solid var(--color-border); border-bottom:1px solid var(--color-border); margin:1rem 0;">
+        <div style="width:48px;height:48px;border-radius:50%;background:var(--color-primary);
+                    color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:1.1rem;"
+             th:text="${#strings.substring(inmueble.propietario.nombre,0,1)}">P</div>
+        <div>
+          <div style="font-weight:600;" th:text="'Anfitrión: ' + ${inmueble.propietario.nombre}"></div>
+          <div style="font-size:.8rem; color:var(--color-text-2);">
+            <span th:text="${inmueble.propietario.numPropiedades}">0</span> propiedades publicadas
+          </div>
+        </div>
+      </div>
+
+      <!-- Descripción -->
+      <div style="margin:1.25rem 0;">
+        <h3 class="section-title">Descripción</h3>
+        <p style="color:var(--color-text-2); font-size:.9rem; line-height:1.8;"
+           th:text="${inmueble.descripcion}">Sin descripción.</p>
+      </div>
+
+      <!-- Comodidades -->
+      <h3 class="section-title">Comodidades</h3>
+      <div class="amenities-grid">
+        <div th:class="${inmueble.wifi ? 'amenity-item active' : 'amenity-item'}">
+          <span>📶</span> WiFi
+        </div>
+        <div th:class="${inmueble.parking ? 'amenity-item active' : 'amenity-item'}">
+          <span>🅿️</span> Parking
+        </div>
+        <div th:class="${inmueble.airConditioning ? 'amenity-item active' : 'amenity-item'}">
+          <span>❄️</span> Aire acond.
+        </div>
+        <div th:class="${inmueble.cocina ? 'amenity-item active' : 'amenity-item'}">
+          <span>🍳</span> Cocina
+        </div>
+        <div th:class="${inmueble.lavadora ? 'amenity-item active' : 'amenity-item'}">
+          <span>🫧</span> Lavadora
+        </div>
+        <div th:class="${inmueble.televisor ? 'amenity-item active' : 'amenity-item'}">
+          <span>📺</span> Televisor
+        </div>
+      </div>
+
+      <!-- Política de cancelación -->
+      <div style="margin-top:1.5rem;">
+        <h3 class="section-title">Política de cancelación</h3>
+        <p style="font-size:.875rem; color:var(--color-text-2);" th:switch="${inmueble.politicaCancelacion.name()}">
+          <span th:case="'FLEXIBLE'">✅ <strong>Flexible</strong> — Reembolso completo hasta 24h antes de la entrada.</span>
+          <span th:case="'MODERADA'">⚠️ <strong>Moderada</strong> — Reembolso completo hasta 7 días antes de la entrada.</span>
+          <span th:case="'ESTRICTA'">🚫 <strong>Estricta</strong> — Sin reembolso una vez realizada la reserva.</span>
+        </p>
+      </div>
+    </div>
+
+    <!-- ─── COLUMNA DERECHA: BOOKING BOX ──────────────────── -->
+    <div>
+      <div class="booking-box">
+        <div class="booking-box-price">
+          €<span th:text="${#numbers.formatDecimal(inmueble.precioPorNoche,1,0)}">0</span>
+          <span>/ noche</span>
+
+          <!-- Botón lista de deseos (solo inquilinos) -->
+          <form sec:authorize="hasRole('INQUILINO')" style="display:inline; float:right;"
+                th:if="${enListaDeseos != null}">
+            <form th:if="${!enListaDeseos}"
+                  th:action="@{/inquilino/lista-deseos/agregar/{id}(id=${inmueble.id})}" method="post">
+              <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+              <button type="submit" class="wishlist-btn" title="Guardar en lista de deseos">♡</button>
+            </form>
+            <form th:if="${enListaDeseos}"
+                  th:action="@{/inquilino/lista-deseos/eliminar/{id}(id=${inmueble.id})}" method="post">
+              <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+              <button type="submit" class="wishlist-btn active" title="Quitar de lista de deseos">♥</button>
+            </form>
+          </form>
+        </div>
+
+        <!-- Formulario de reserva (solo para inquilinos o anónimos) -->
+        <div sec:authorize="!hasRole('PROPIETARIO')">
+          <!-- Selector de flujo si el inmueble es de solicitud -->
+          <div th:if="${inmueble.tipoFlujo.name()=='SOLICITUD'}"
+               style="font-size:.8rem;color:var(--color-text-2);background:var(--color-warning-bg);
+                      border-radius:var(--radius-sm);padding:.6rem .85rem;margin-bottom:1rem;
+                      border-left:3px solid var(--color-warning);">
+            📋 Este alojamiento requiere confirmación del propietario antes de confirmar la reserva.
+          </div>
+
+          <form id="booking-form" method="post">
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+            <input type="hidden" name="inmuebleId" th:value="${inmueble.id}"/>
+
+            <div class="form-group">
+              <label>Fecha de entrada</label>
+              <input type="date" name="fechaEntrada" id="fechaEntrada" class="form-control"
+                     required onchange="calcularPrecio()"/>
+            </div>
+            <div class="form-group">
+              <label>Fecha de salida</label>
+              <input type="date" name="fechaSalida" id="fechaSalida" class="form-control"
+                     required onchange="calcularPrecio()"/>
+            </div>
+
+            <!-- Mensaje para solicitud -->
+            <div class="form-group" th:if="${inmueble.tipoFlujo.name()=='SOLICITUD'}">
+              <label>Mensaje al propietario (opcional)</label>
+              <textarea name="mensaje" class="form-control" rows="2"
+                        placeholder="Preséntate brevemente..."></textarea>
+            </div>
+
+            <!-- Desglose de precio -->
+            <div class="price-breakdown" id="price-breakdown" style="display:none">
+              <div class="price-row">
+                <span id="price-label">€0 × 0 noches</span>
+                <span id="price-sub">€0</span>
+              </div>
+              <div class="price-row">
+                <span>Tarifa de servicio (12%)</span>
+                <span id="price-fee">€0</span>
+              </div>
+              <div class="price-row total">
+                <span>Total</span>
+                <span id="price-total">€0</span>
+              </div>
+            </div>
+
+            <!-- Botón según flujo y autenticación -->
+            <div sec:authorize="isAuthenticated()">
+              <button type="submit"
+                      th:formaction="${inmueble.tipoFlujo.name()=='INMEDIATA'
+                                       ? '/reservas/nueva/inmediata'
+                                       : '/reservas/nueva/solicitud'}"
+                      class="btn btn-primary btn-block btn-lg" style="margin-top:1rem;">
+                <span th:if="${inmueble.tipoFlujo.name()=='INMEDIATA'}">⚡ Reservar y pagar</span>
+                <span th:if="${inmueble.tipoFlujo.name()=='SOLICITUD'}">📋 Enviar solicitud</span>
+              </button>
+            </div>
+            <div sec:authorize="isAnonymous()">
+              <a th:href="@{/auth/login}" class="btn btn-primary btn-block btn-lg" style="margin-top:1rem;">
+                Inicia sesión para reservar
+              </a>
+            </div>
+          </form>
+        </div>
+
+        <!-- Si es el propio propietario -->
+        <div sec:authorize="hasRole('PROPIETARIO')"
+             style="text-align:center; padding:1rem 0; color:var(--color-text-2); font-size:.875rem;">
+          Esta es tu propiedad.<br/>
+          <a th:href="@{/propietario/panel}">Gestionar desde el panel →</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<div th:replace="~{fragments/layout :: footer}"></div>
+
+<script th:inline="javascript">
+const precioPorNoche = [[${inmueble.precioPorNoche}]];
+
+function calcularPrecio() {
+  const entrada = document.getElementById('fechaEntrada').value;
+  const salida  = document.getElementById('fechaSalida').value;
+  if (!entrada || !salida) return;
+
+  const d1 = new Date(entrada), d2 = new Date(salida);
+  const noches = Math.round((d2 - d1) / (1000 * 60 * 60 * 24));
+  if (noches <= 0) return;
+
+  const base  = precioPorNoche * noches;
+  const fee   = Math.round(base * 0.12 * 100) / 100;
+  const total = Math.round((base + fee) * 100) / 100;
+
+  document.getElementById('price-label').textContent = `€${precioPorNoche} × ${noches} noche(s)`;
+  document.getElementById('price-sub').textContent   = `€${base.toFixed(2)}`;
+  document.getElementById('price-fee').textContent   = `€${fee.toFixed(2)}`;
+  document.getElementById('price-total').textContent = `€${total.toFixed(2)}`;
+  document.getElementById('price-breakdown').style.display = 'block';
+}
+</script>
+</body>
+</html>

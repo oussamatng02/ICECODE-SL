@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Lista de deseos · AlquilaYa</title>
+  <link rel="stylesheet" th:href="@{/css/main.css}"/>
+</head>
+<body>
+
+<div th:replace="~{fragments/layout :: navbar}"></div>
+
+<main class="container" style="padding-top:2rem;">
+  <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem;">
+    <h1 style="font-size:1.5rem; font-weight:700;">♡ Mi lista de deseos</h1>
+    <a th:href="@{/inmuebles/buscar}" class="btn btn-outline btn-sm">Explorar más</a>
+  </div>
+
+  <div th:replace="~{fragments/layout :: alertas}"></div>
+
+  <div th:if="${inmuebles.empty}"
+       style="text-align:center; padding:4rem 0; color:var(--color-text-2);">
+    <div style="font-size:3rem; margin-bottom:1rem;">♡</div>
+    <p>Aún no has guardado ningún alojamiento.</p>
+    <a th:href="@{/inmuebles/buscar}" class="btn btn-primary" style="margin-top:1rem;">
+      Explorar alojamientos
+    </a>
+  </div>
+
+  <div class="listings-grid">
+    <div th:each="inm : ${inmuebles}" style="position:relative;">
+      <a th:href="@{/inmuebles/{id}(id=${inm.id})}"
+         class="listing-card" style="text-decoration:none; color:inherit; display:block;">
+        <div class="card-image">
+          <span th:switch="${inm.tipo.name()}">
+            <span th:case="'VIVIENDA_COMPLETA'">🏠</span>
+            <span th:case="'HABITACION_PRIVADA'">🛏</span>
+            <span th:case="*">🏘</span>
+          </span>
+        </div>
+        <div class="card-body">
+          <div class="card-title" th:text="${inm.titulo}"></div>
+          <div class="card-location">📍 <span th:text="${inm.ubicacion}"></span></div>
+          <span th:if="${inm.tipoFlujo.name()=='INMEDIATA'}" class="badge badge-green">⚡ Inmediata</span>
+          <span th:if="${inm.tipoFlujo.name()=='SOLICITUD'}"  class="badge badge-amber">📋 Solicitud</span>
+          <div class="card-footer">
+            <div class="card-price">
+              €<span th:text="${#numbers.formatDecimal(inm.precioPorNoche,1,0)}"></span>
+              <span>/ noche</span>
+            </div>
+            <div class="card-rating">⭐ <span th:text="${#numbers.formatDecimal(inm.valoracion,1,1)}"></span></div>
+          </div>
+        </div>
+      </a>
+      <!-- Botón eliminar de lista -->
+      <form th:action="@{/inquilino/lista-deseos/eliminar/{id}(id=${inm.id})}" method="post"
+            style="position:absolute; top:.75rem; right:.75rem;">
+        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+        <button type="submit" class="wishlist-btn active" title="Quitar de la lista">♥</button>
+      </form>
+    </div>
+  </div>
+</main>
+
+<div th:replace="~{fragments/layout :: footer}"></div>
+</body>
+</html>

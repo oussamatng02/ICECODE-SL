@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security" lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Panel propietario · AlquilaYa</title>
+  <link rel="stylesheet" th:href="@{/css/main.css}"/>
+</head>
+<body>
+
+<div th:replace="~{fragments/layout :: navbar}"></div>
+
+<!-- Header del panel -->
+<section class="panel-header">
+  <div class="container">
+    <h1>Hola, <span th:text="${propietario.nombre}">Propietario</span> 👋</h1>
+    <p>Gestiona tus propiedades y solicitudes de reserva desde aquí.</p>
+  </div>
+</section>
+
+<main class="container">
+  <div th:replace="~{fragments/layout :: alertas}"></div>
+
+  <!-- Stats -->
+  <div class="stats-row">
+    <div class="stat-card">
+      <div class="label">Propiedades</div>
+      <div class="value" th:text="${inmuebles.size()}">0</div>
+    </div>
+    <div class="stat-card">
+      <div class="label">Solicitudes pendientes</div>
+      <div class="value" th:text="${solicitudesPendientes.size()}">0</div>
+    </div>
+    <div class="stat-card">
+      <div class="label">Reservas totales</div>
+      <div class="value" th:text="${reservasRecientes.size()}">0</div>
+    </div>
+    <div class="stat-card">
+      <div class="label">Valoración media</div>
+      <div class="value" th:text="${#numbers.formatDecimal(propietario.valoracion,1,1)} + ' ⭐'">0.0 ⭐</div>
+    </div>
+  </div>
+
+  <!-- ─── SOLICITUDES PENDIENTES ─────────────────────────── -->
+  <div th:if="${!solicitudesPendientes.empty}" style="margin-bottom:2.5rem;">
+    <h2 class="section-title">
+      📋 Solicitudes pendientes
+      <span class="badge badge-amber" th:text="${solicitudesPendientes.size()}">0</span>
+    </h2>
+
+    <div th:each="sol : ${solicitudesPendientes}" class="request-card">
+      <div class="rc-info">
+        <div class="rc-title">
+          <span th:text="${sol.inquilino.nombre}">Inquilino</span>
+          solicita <strong th:text="${sol.inmueble.titulo}">Inmueble</strong>
+        </div>
+        <div class="rc-sub">
+          📅 <span th:text="${#temporals.format(sol.fechaEntradaSolicitada,'dd/MM/yyyy')}"></span>
+          → <span th:text="${#temporals.format(sol.fechaSalidaSolicitada,'dd/MM/yyyy')}"></span>
+          &nbsp;·&nbsp;
+          🕐 <span th:text="${#temporals.format(sol.fechaSolicitud,'dd/MM/yyyy HH:mm')}"></span>
+        </div>
+        <div th:if="${sol.mensajeInquilino}" class="rc-msg"
+             th:text="'«' + ${sol.mensajeInquilino} + '»'"></div>
+      </div>
+      <div class="rc-actions">
+        <!-- Aceptar -->
+        <form th:action="@{/propietario/solicitudes/{id}/aceptar(id=${sol.id})}" method="post">
+          <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+          <input type="text" name="mensaje" class="form-control"
+                 placeholder="Mensaje opcional..." style="margin-bottom:.4rem; font-size:.8rem;"/>
+          <button type="submit" class="btn btn-success btn-sm btn-block">✓ Aceptar</button>
+        </form>
+        <!-- Rechazar -->
+        <form th:action="@{/propietario/solicitudes/{id}/rechazar(id=${sol.id})}" method="post">
+          <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+          <button type="submit" class="btn btn-danger btn-sm btn-block">✕ Rechazar</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── MIS PROPIEDADES ────────────────────────────────── -->
+  <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
+    <h2 class="section-title" style="margin-bottom:0;">🏠 Mis propiedades</h2>
+    <a th:href="@{/propietario/inmuebles/nuevo}" class="btn btn-primary btn-sm">+ Nueva propiedad</a>
+  </div>
+
+  <div th:if="${inmuebles.empty}"
+       style="text-align:center; padding:2.5rem; color:var(--color-text-2);
+              border:1px dashed var(--color-border); border-radius:var(--radius-lg);">
+    <p>Aún no has publicado ninguna propiedad.</p>
+    <a th:href="@{/propietario/inmuebles/nuevo}" class="btn btn-primary" style="margin-top:1rem;">
+      Publicar mi primera propiedad
+    </a>
+  </div>
+
+  <div class="table-wrap" th:if="${!inmuebles.empty}" style="margin-bottom:2.5rem;">
+    <table>
+      <thead>
+        <tr>
+          <th>Propiedad</th>
+          <th>Tipo</th>
+          <th>Precio/noche</th>
+          <th>Flujo</th>
+          <th>Estado</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr th:each="inm : ${inmuebles}">
+          <td>
+            <a th:href="@{/inmuebles/{id}(id=${inm.id})}"
+               th:text="${inm.titulo}" style="font-weight:600;"></a>
+            <div style="font-size:.78rem; color:var(--color-text-2);" th:text="${inm.ubicacion}"></div>
+          </td>
+          <td style="font-size:.8rem;" th:text="${inm.tipo.name().replace('_',' ')}"></td>
+          <td style="font-weight:600;">€<span th:text="${#numbers.formatDecimal(inm.precioPorNoche,1,0)}"></span></td>
+          <td>
+            <span th:if="${inm.tipoFlujo.name()=='INMEDIATA'}" class="badge badge-green">⚡ Inmediata</span>
+            <span th:if="${inm.tipoFlujo.name()=='SOLICITUD'}"  class="badge badge-amber">📋 Solicitud</span>
+          </td>
+          <td>
+            <span th:if="${inm.activo}"  class="badge badge-green">Activo</span>
+            <span th:if="${!inm.activo}" class="badge badge-gray">Inactivo</span>
+          </td>
+          <td>
+            <form th:action="@{/propietario/inmuebles/{id}/desactivar(id=${inm.id})}"
+                  method="post" style="display:inline;">
+              <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+              <button type="submit" class="btn btn-outline btn-sm"
+                      th:if="${inm.activo}"
+                      onclick="return confirm('¿Desactivar esta propiedad?')">Desactivar</button>
+            </form>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ─── RESERVAS RECIENTES ─────────────────────────────── -->
+  <h2 class="section-title">📅 Reservas recientes</h2>
+
+  <div th:if="${reservasRecientes.empty}"
+       style="text-align:center; padding:2rem; color:var(--color-text-2);">
+    <p>Aún no tienes reservas en tus propiedades.</p>
+  </div>
+
+  <div class="table-wrap" th:if="${!reservasRecientes.empty}">
+    <table>
+      <thead>
+        <tr>
+          <th>#</th><th>Inquilino</th><th>Propiedad</th>
+          <th>Entrada</th><th>Salida</th><th>Importe</th><th>Estado</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr th:each="res : ${reservasRecientes}">
+          <td style="color:var(--color-text-2);">#<span th:text="${res.id}"></span></td>
+          <td th:text="${res.inquilino.nombre}"></td>
+          <td th:text="${res.inmueble.titulo}" style="font-size:.85rem;"></td>
+          <td th:text="${#temporals.format(res.fechaEntrada,'dd/MM/yyyy')}"></td>
+          <td th:text="${#temporals.format(res.fechaSalida,'dd/MM/yyyy')}"></td>
+          <td style="font-weight:600;">€<span th:text="${#numbers.formatDecimal(res.importeTotal,1,2)}"></span></td>
+          <td>
+            <span th:switch="${res.estado.name()}">
+              <span th:case="'CONFIRMADA'"     class="badge badge-green">Confirmada</span>
+              <span th:case="'PENDIENTE_PAGO'" class="badge badge-amber">Pend. pago</span>
+              <span th:case="'CANCELADA'"      class="badge badge-red">Cancelada</span>
+              <span th:case="'COMPLETADA'"     class="badge badge-blue">Completada</span>
+            </span>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</main>
+
+<div th:replace="~{fragments/layout :: footer}"></div>
+</body>
+</html>

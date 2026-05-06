@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Mi perfil · AlquilaYa</title>
+  <link rel="stylesheet" th:href="@{/css/main.css}"/>
+</head>
+<body>
+
+<div th:replace="~{fragments/layout :: navbar}"></div>
+
+<section class="panel-header">
+  <div class="container">
+    <h1>Hola, <span th:text="${inquilino.nombre}">Inquilino</span> 👋</h1>
+    <p>Aquí puedes ver tus reservas y tu lista de deseos.</p>
+  </div>
+</section>
+
+<main class="container">
+  <div th:replace="~{fragments/layout :: alertas}"></div>
+
+  <!-- Stats -->
+  <div class="stats-row">
+    <div class="stat-card">
+      <div class="label">Reservas</div>
+      <div class="value" th:text="${reservas.size()}">0</div>
+    </div>
+    <div class="stat-card">
+      <div class="label">Lista de deseos</div>
+      <div class="value" th:text="${listaDeseos.size()}">0</div>
+    </div>
+    <div class="stat-card">
+      <div class="label">Valoración</div>
+      <div class="value" th:text="${#numbers.formatDecimal(inquilino.valoracion,1,1)} + ' ⭐'">0.0 ⭐</div>
+    </div>
+    <div class="stat-card">
+      <div class="label">Miembro desde</div>
+      <div class="value" style="font-size:1.1rem;"
+           th:text="${#temporals.format(inquilino.fechaRegistro,'MMM yyyy')}">Ene 2024</div>
+    </div>
+  </div>
+
+  <!-- ─── MIS RESERVAS ──────────────────────── -->
+  <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
+    <h2 class="section-title" style="margin-bottom:0;">📅 Mis reservas</h2>
+    <a th:href="@{/inmuebles/buscar}" class="btn btn-primary btn-sm">+ Nueva búsqueda</a>
+  </div>
+
+  <div th:if="${reservas.empty}"
+       style="text-align:center; padding:2.5rem; color:var(--color-text-2);
+              border:1px dashed var(--color-border); border-radius:var(--radius-lg); margin-bottom:2rem;">
+    <div style="font-size:2.5rem; margin-bottom:.75rem;">🗓️</div>
+    <p>Aún no tienes reservas.</p>
+    <a th:href="@{/inmuebles/buscar}" class="btn btn-primary" style="margin-top:1rem;">Explorar alojamientos</a>
+  </div>
+
+  <div class="table-wrap" th:if="${!reservas.empty}" style="margin-bottom:2.5rem;">
+    <table>
+      <thead>
+        <tr>
+          <th>#</th><th>Alojamiento</th><th>Entrada</th>
+          <th>Salida</th><th>Noches</th><th>Total</th><th>Estado</th><th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr th:each="res : ${reservas}">
+          <td style="color:var(--color-text-2);">#<span th:text="${res.id}"></span></td>
+          <td>
+            <a th:href="@{/inmuebles/{id}(id=${res.inmueble.id})}"
+               th:text="${res.inmueble.titulo}" style="font-weight:600;"></a>
+            <div style="font-size:.78rem; color:var(--color-text-2);" th:text="${res.inmueble.ubicacion}"></div>
+          </td>
+          <td th:text="${#temporals.format(res.fechaEntrada,'dd/MM/yyyy')}"></td>
+          <td th:text="${#temporals.format(res.fechaSalida,'dd/MM/yyyy')}"></td>
+          <td th:text="${res.numNoches}"></td>
+          <td style="font-weight:600;">€<span th:text="${#numbers.formatDecimal(res.importeTotal,1,2)}"></span></td>
+          <td>
+            <span th:switch="${res.estado.name()}">
+              <span th:case="'CONFIRMADA'"     class="badge badge-green">Confirmada</span>
+              <span th:case="'PENDIENTE_PAGO'" class="badge badge-amber">Pend. pago</span>
+              <span th:case="'CANCELADA'"      class="badge badge-red">Cancelada</span>
+              <span th:case="'COMPLETADA'"     class="badge badge-blue">Completada</span>
+            </span>
+          </td>
+          <td>
+            <form th:if="${res.estado.name() == 'CONFIRMADA' or res.estado.name() == 'PENDIENTE_PAGO'}"
+                  th:action="@{/reservas/{id}/cancelar(id=${res.id})}" method="post">
+              <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+              <button type="submit" class="btn btn-outline btn-sm"
+                      onclick="return confirm('¿Cancelar esta reserva?')">Cancelar</button>
+            </form>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ─── LISTA DE DESEOS ───────────────────── -->
+  <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
+    <h2 class="section-title" style="margin-bottom:0;">♡ Lista de deseos</h2>
+    <a th:href="@{/inquilino/lista-deseos}" class="btn btn-outline btn-sm">Ver todo</a>
+  </div>
+
+  <div th:if="${listaDeseos.empty}"
+       style="text-align:center; padding:2rem; color:var(--color-text-2);
+              border:1px dashed var(--color-border); border-radius:var(--radius-lg);">
+    <p>Tu lista de deseos está vacía. Guarda alojamientos que te interesen con ♡.</p>
+  </div>
+
+  <div class="listings-grid" th:if="${!listaDeseos.empty}"
+       style="grid-template-columns: repeat(auto-fill, minmax(220px,1fr));">
+    <a th:each="inm : ${listaDeseos}"
+       th:href="@{/inmuebles/{id}(id=${inm.id})}"
+       class="listing-card" style="text-decoration:none; color:inherit;">
+      <div class="card-image">
+        <span th:switch="${inm.tipo.name()}">
+          <span th:case="'VIVIENDA_COMPLETA'">🏠</span>
+          <span th:case="*">🛏</span>
+        </span>
+      </div>
+      <div class="card-body">
+        <div class="card-title" th:text="${inm.titulo}"></div>
+        <div class="card-location">📍 <span th:text="${inm.ubicacion}"></span></div>
+        <div class="card-price">
+          €<span th:text="${#numbers.formatDecimal(inm.precioPorNoche,1,0)}"></span>
+          <span>/ noche</span>
+        </div>
+      </div>
+    </a>
+  </div>
+</main>
+
+<div th:replace="~{fragments/layout :: footer}"></div>
+</body>
+</html>

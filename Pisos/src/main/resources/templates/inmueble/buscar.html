@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Buscar alojamiento · AlquilaYa</title>
+  <link rel="stylesheet" th:href="@{/css/main.css}"/>
+</head>
+<body>
+
+<div th:replace="~{fragments/layout :: navbar}"></div>
+
+<main class="container" style="padding-top:1.5rem;">
+  <h1 style="font-size:1.5rem; font-weight:700; margin-bottom:1.5rem;">Buscar alojamiento</h1>
+
+  <!-- Formulario de búsqueda compacto -->
+  <form th:action="@{/inmuebles/buscar}" method="get"
+        style="background:var(--color-surface); border:1px solid var(--color-border);
+               border-radius:var(--radius-lg); padding:1.25rem 1.5rem; margin-bottom:1.5rem;">
+    <div class="form-row" style="flex-wrap:wrap; gap:.75rem; align-items:flex-end;">
+      <div class="form-group" style="flex:2; min-width:160px; margin-bottom:0">
+        <label>Destino</label>
+        <input type="text" name="ubicacion" class="form-control"
+               placeholder="Ciudad..." th:value="${ubicacion}"/>
+      </div>
+      <div class="form-group" style="flex:1; min-width:130px; margin-bottom:0">
+        <label>Entrada</label>
+        <input type="date" name="entradaStr" class="form-control" th:value="${entrada}"/>
+      </div>
+      <div class="form-group" style="flex:1; min-width:130px; margin-bottom:0">
+        <label>Salida</label>
+        <input type="date" name="salidaStr" class="form-control" th:value="${salida}"/>
+      </div>
+      <div class="form-group" style="flex:1; min-width:150px; margin-bottom:0">
+        <label>Tipo de inmueble</label>
+        <select name="tipo" class="form-control">
+          <option value="">Todos los tipos</option>
+          <option th:each="t : ${tiposInmueble}" th:value="${t.name()}" th:text="${t.name().replace('_',' ')}"></option>
+        </select>
+      </div>
+      <div class="form-group" style="flex:1; min-width:150px; margin-bottom:0">
+        <label>Flujo de reserva</label>
+        <select name="tipoFlujo" class="form-control">
+          <option value="">Todos</option>
+          <option th:each="f : ${tiposFlujo}" th:value="${f.name()}"
+                  th:text="${f.name() == 'INMEDIATA' ? '⚡ Reserva inmediata' : '📋 Solicitud'}"></option>
+        </select>
+      </div>
+      <div class="form-group" style="flex:0.8; min-width:110px; margin-bottom:0">
+        <label>Precio máx. (€)</label>
+        <input type="number" name="precioMax" class="form-control" placeholder="Sin límite" min="1"/>
+      </div>
+      <button type="submit" class="btn btn-primary" style="align-self:flex-end; white-space:nowrap;">
+        Buscar
+      </button>
+    </div>
+
+    <!-- Filtros adicionales -->
+    <div style="margin-top:1rem; display:flex; gap:.5rem; flex-wrap:wrap; align-items:center;">
+      <span style="font-size:.8rem; color:var(--color-text-2); font-weight:600;">Comodidades:</span>
+      <label class="chip"><input type="checkbox" name="wifi"    value="true" style="margin-right:.3rem;"/> WiFi</label>
+      <label class="chip"><input type="checkbox" name="parking" value="true" style="margin-right:.3rem;"/> Parking</label>
+    </div>
+  </form>
+
+  <!-- Resultados -->
+  <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
+    <p style="font-size:.95rem; color:var(--color-text-2);">
+      <strong th:text="${inmuebles.size()}">0</strong> resultado(s)
+      <span th:if="${ubicacion}"> en <strong th:text="${ubicacion}"></strong></span>
+    </p>
+  </div>
+
+  <div th:if="${inmuebles.empty}"
+       style="text-align:center; padding:3.5rem 0; color:var(--color-text-2);">
+    <div style="font-size:2.5rem; margin-bottom:.75rem;">🔍</div>
+    <p>No se encontraron alojamientos con esos criterios.</p>
+    <a th:href="@{/}" class="btn btn-outline" style="margin-top:1rem;">Ver todos</a>
+  </div>
+
+  <div class="listings-grid">
+    <a th:each="inm : ${inmuebles}"
+       th:href="@{/inmuebles/{id}(id=${inm.id})}"
+       class="listing-card" style="text-decoration:none; color:inherit;">
+      <div class="card-image">
+        <span th:switch="${inm.tipo.name()}">
+          <span th:case="'VIVIENDA_COMPLETA'">🏠</span>
+          <span th:case="'HABITACION_PRIVADA'">🛏</span>
+          <span th:case="*">🏘</span>
+        </span>
+      </div>
+      <div class="card-body">
+        <div class="card-title" th:text="${inm.titulo}">Título</div>
+        <div class="card-location">📍 <span th:text="${inm.ubicacion}"></span></div>
+        <span th:if="${inm.tipoFlujo.name() == 'INMEDIATA'}" class="badge badge-green">⚡ Inmediata</span>
+        <span th:if="${inm.tipoFlujo.name() == 'SOLICITUD'}" class="badge badge-amber">📋 Solicitud</span>
+        <div class="card-footer">
+          <div class="card-price">
+            €<span th:text="${#numbers.formatDecimal(inm.precioPorNoche,1,0)}"></span>
+            <span>/ noche</span>
+          </div>
+          <div class="card-rating">⭐ <span th:text="${#numbers.formatDecimal(inm.valoracion,1,1)}"></span></div>
+        </div>
+      </div>
+    </a>
+  </div>
+</main>
+
+<div th:replace="~{fragments/layout :: footer}"></div>
+</body>
+</html>

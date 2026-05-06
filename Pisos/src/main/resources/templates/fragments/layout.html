@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<!-- ═══ NAVBAR FRAGMENT ═══════════════════════════════════════════════════ -->
+<nav th:fragment="navbar" class="navbar">
+  <div class="container navbar-inner">
+    <a th:href="@{/}" class="navbar-brand">Alquila<span>Ya</span></a>
+
+    <nav class="navbar-nav">
+      <a th:href="@{/inmuebles/buscar}" class="nav-link">Explorar</a>
+
+      <!-- Autenticado como INQUILINO -->
+      <span sec:authorize="hasRole('INQUILINO')">
+        <a th:href="@{/inquilino/lista-deseos}" class="nav-link">Lista de deseos ♡</a>
+        <a th:href="@{/reservas/mis-reservas}"  class="nav-link">Mis reservas</a>
+        <a th:href="@{/inquilino/panel}"         class="nav-link">Mi perfil</a>
+      </span>
+
+      <!-- Autenticado como PROPIETARIO -->
+      <span sec:authorize="hasRole('PROPIETARIO')">
+        <a th:href="@{/propietario/inmuebles/nuevo}" class="nav-link">+ Publicar</a>
+        <a th:href="@{/propietario/panel}"           class="nav-link">Mi panel</a>
+      </span>
+
+      <!-- No autenticado -->
+      <span sec:authorize="isAnonymous()">
+        <a th:href="@{/auth/login}"   class="nav-link">Iniciar sesión</a>
+        <a th:href="@{/auth/registro}" class="nav-btn">Registrarse</a>
+      </span>
+
+      <!-- Autenticado: botón logout -->
+      <span sec:authorize="isAuthenticated()">
+        <form th:action="@{/auth/logout}" method="post" style="display:inline">
+          <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+          <button type="submit" class="nav-link" style="background:none;border:none;cursor:pointer;font-family:inherit;color:var(--color-text-2)">
+            Cerrar sesión
+          </button>
+        </form>
+      </span>
+    </nav>
+  </div>
+</nav>
+
+<!-- ═══ FOOTER FRAGMENT ═══════════════════════════════════════════════════ -->
+<footer th:fragment="footer">
+  <p>&copy; 2024 AlquilaYa · UCLM Ingeniería del Software II ·
+    <a th:href="@{/}">Inicio</a>
+  </p>
+</footer>
+
+<!-- ═══ ALERTAS FRAGMENT ══════════════════════════════════════════════════ -->
+<div th:fragment="alertas">
+  <div th:if="${exito}"  class="alert alert-success">
+    <span>✓</span> <span th:text="${exito}"></span>
+  </div>
+  <div th:if="${error}"  class="alert alert-danger">
+    <span>✕</span> <span th:text="${error}"></span>
+  </div>
+  <div th:if="${info}"   class="alert alert-info">
+    <span>ℹ</span> <span th:text="${info}"></span>
+  </div>
+</div>
+
+</html>

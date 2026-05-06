@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Nueva propiedad · AlquilaYa</title>
+  <link rel="stylesheet" th:href="@{/css/main.css}"/>
+</head>
+<body style="background:var(--color-bg);">
+
+<div th:replace="~{fragments/layout :: navbar}"></div>
+
+<main class="container-sm" style="padding-top:2rem; padding-bottom:3rem;">
+  <div style="margin-bottom:1.5rem;">
+    <a th:href="@{/propietario/panel}" style="font-size:.875rem; color:var(--color-text-2);">
+      ← Volver al panel
+    </a>
+  </div>
+
+  <div class="form-card">
+    <h1 class="form-title">Publicar nueva propiedad</h1>
+
+    <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+
+    <form th:action="@{/propietario/inmuebles/nuevo}" method="post">
+      <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+
+      <!-- Título y ubicación -->
+      <div class="form-group">
+        <label for="titulo">Título del anuncio *</label>
+        <input type="text" id="titulo" name="titulo" class="form-control"
+               placeholder="Ej: Ático luminoso con terraza en el centro" required maxlength="150"/>
+        <div class="form-hint">Sé descriptivo: tipo de alojamiento + característica especial + zona.</div>
+      </div>
+
+      <div class="form-group">
+        <label for="ubicacion">Ubicación *</label>
+        <input type="text" id="ubicacion" name="ubicacion" class="form-control"
+               placeholder="Ej: Madrid, barrio de Malasaña" required/>
+      </div>
+
+      <div class="form-group">
+        <label for="descripcion">Descripción</label>
+        <textarea id="descripcion" name="descripcion" class="form-control" rows="4"
+                  placeholder="Describe el espacio, el entorno, normas de la casa..."
+                  maxlength="2000"></textarea>
+      </div>
+
+      <!-- Tipo y capacidad -->
+      <div class="form-row">
+        <div class="form-group">
+          <label for="tipo">Tipo de inmueble *</label>
+          <select id="tipo" name="tipo" class="form-control" required>
+            <option value="">Selecciona...</option>
+            <option th:each="t : ${tipos}" th:value="${t.name()}"
+                    th:text="${t.name().replace('_',' ')}"></option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="capacidadMaxima">Capacidad máxima *</label>
+          <input type="number" id="capacidadMaxima" name="capacidadMaxima"
+                 class="form-control" value="2" min="1" max="20" required/>
+          <div class="form-hint">Número máximo de huéspedes.</div>
+        </div>
+      </div>
+
+      <!-- Precio y flujo -->
+      <div class="form-row">
+        <div class="form-group">
+          <label for="precioPorNoche">Precio por noche (€) *</label>
+          <input type="number" id="precioPorNoche" name="precioPorNoche"
+                 class="form-control" placeholder="85" min="1" step="0.01" required/>
+        </div>
+        <div class="form-group">
+          <label for="tipoFlujo">Tipo de reserva *</label>
+          <select id="tipoFlujo" name="tipoFlujo" class="form-control" required>
+            <option th:each="f : ${flujos}" th:value="${f.name()}"
+                    th:text="${f.name()=='INMEDIATA' ? '⚡ Reserva inmediata' : '📋 Solicitud al propietario'}"></option>
+          </select>
+          <div class="form-hint">«Inmediata»: pago directo. «Solicitud»: tú aceptas antes.</div>
+        </div>
+      </div>
+
+      <!-- Política de cancelación -->
+      <div class="form-group">
+        <label for="politicaCancelacion">Política de cancelación *</label>
+        <select id="politicaCancelacion" name="politicaCancelacion" class="form-control" required>
+          <option value="FLEXIBLE">Flexible — Reembolso completo hasta 24h antes</option>
+          <option value="MODERADA">Moderada — Reembolso hasta 7 días antes</option>
+          <option value="ESTRICTA">Estricta — Sin reembolso</option>
+        </select>
+      </div>
+
+      <!-- Comodidades -->
+      <div class="form-group">
+        <label>Comodidades disponibles</label>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:.35rem; margin-top:.5rem;">
+          <label class="form-check">
+            <input type="checkbox" name="wifi" value="true"/> 📶 WiFi
+          </label>
+          <label class="form-check">
+            <input type="checkbox" name="parking" value="true"/> 🅿️ Parking
+          </label>
+          <label class="form-check">
+            <input type="checkbox" name="airConditioning" value="true"/> ❄️ Aire acondicionado
+          </label>
+          <label class="form-check">
+            <input type="checkbox" name="cocina" value="true"/> 🍳 Cocina equipada
+          </label>
+          <label class="form-check">
+            <input type="checkbox" name="lavadora" value="true"/> 🫧 Lavadora
+          </label>
+          <label class="form-check">
+            <input type="checkbox" name="televisor" value="true"/> 📺 Televisor
+          </label>
+        </div>
+      </div>
+
+      <div style="display:flex; gap:1rem; margin-top:1.5rem;">
+        <a th:href="@{/propietario/panel}" class="btn btn-outline" style="flex:0.4; text-align:center;">
+          Cancelar
+        </a>
+        <button type="submit" class="btn btn-primary" style="flex:1;">
+          🏠 Publicar propiedad
+        </button>
+      </div>
+    </form>
+  </div>
+</main>
+
+<div th:replace="~{fragments/layout :: footer}"></div>
+</body>
+</html>

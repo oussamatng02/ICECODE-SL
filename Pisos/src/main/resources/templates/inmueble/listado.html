@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security" lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>AlquilaYa · Alquiler de viviendas entre particulares</title>
+  <link rel="stylesheet" th:href="@{/css/main.css}"/>
+</head>
+<body>
+
+<div th:replace="~{fragments/layout :: navbar}"></div>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="container">
+    <h1>Encuentra tu alojamiento ideal</h1>
+    <p>Reserva viviendas y habitaciones directamente de particulares</p>
+
+    <form class="search-box" th:action="@{/inmuebles/buscar}" method="get">
+      <div class="search-field">
+        <label>Destino</label>
+        <input type="text" name="ubicacion" placeholder="Ciudad o municipio..."/>
+      </div>
+      <div class="search-field">
+        <label>Entrada</label>
+        <input type="date" name="entradaStr" th:min="${#temporals.format(#temporals.createNow(),'yyyy-MM-dd')}"/>
+      </div>
+      <div class="search-field">
+        <label>Salida</label>
+        <input type="date" name="salidaStr"/>
+      </div>
+      <div class="search-field" style="flex:0.6">
+        <label>Tipo</label>
+        <select name="tipo">
+          <option value="">Todos</option>
+          <option value="VIVIENDA_COMPLETA">Vivienda completa</option>
+          <option value="HABITACION_PRIVADA">Hab. privada</option>
+          <option value="HABITACION_COMPARTIDA">Hab. compartida</option>
+        </select>
+      </div>
+      <button type="submit" class="btn btn-primary btn-lg">Buscar</button>
+    </form>
+  </div>
+</section>
+
+<!-- LISTADO -->
+<main class="container">
+  <div style="display:flex; justify-content:space-between; align-items:center; padding:2rem 0 .5rem;">
+    <h2 style="font-size:1.25rem; font-weight:700;">
+      <span th:text="${inmuebles.size()}">0</span> alojamientos disponibles
+    </h2>
+  </div>
+
+  <!-- Sin resultados -->
+  <div th:if="${inmuebles.empty}" style="text-align:center; padding:4rem 0; color:var(--color-text-2);">
+    <div style="font-size:3rem; margin-bottom:1rem;">🏠</div>
+    <p>Aún no hay inmuebles publicados.</p>
+    <a th:href="@{/propietario/inmuebles/nuevo}" class="btn btn-primary" style="margin-top:1rem"
+       sec:authorize="hasRole('PROPIETARIO')">Publica el primero</a>
+  </div>
+
+  <!-- Grid -->
+  <div class="listings-grid">
+    <a th:each="inm : ${inmuebles}"
+       th:href="@{/inmuebles/{id}(id=${inm.id})}"
+       class="listing-card" style="text-decoration:none; color:inherit;">
+
+      <div class="card-image">
+        <span th:switch="${inm.tipo.name()}">
+          <span th:case="'VIVIENDA_COMPLETA'">🏠</span>
+          <span th:case="'HABITACION_PRIVADA'">🛏</span>
+          <span th:case="'HABITACION_COMPARTIDA'">🏘</span>
+          <span th:case="*">🏡</span>
+        </span>
+      </div>
+
+      <div class="card-body">
+        <div class="card-title" th:text="${inm.titulo}">Título</div>
+        <div class="card-location">📍 <span th:text="${inm.ubicacion}">Ubicación</span></div>
+
+        <span th:if="${inm.tipoFlujo.name() == 'INMEDIATA'}"   class="badge badge-green">⚡ Reserva inmediata</span>
+        <span th:if="${inm.tipoFlujo.name() == 'SOLICITUD'}"   class="badge badge-amber">📋 Solicitud</span>
+
+        <div class="card-footer">
+          <div class="card-price">
+            €<span th:text="${#numbers.formatDecimal(inm.precioPorNoche, 1, 0)}">0</span>
+            <span>/ noche</span>
+          </div>
+          <div class="card-rating">
+            ⭐ <span th:text="${#numbers.formatDecimal(inm.valoracion, 1, 1)}">0.0</span>
+          </div>
+        </div>
+      </div>
+    </a>
+  </div>
+</main>
+
+<div th:replace="~{fragments/layout :: footer}"></div>
+</body>
+</html>

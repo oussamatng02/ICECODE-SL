@@ -136,22 +136,30 @@
     </build>
 
     <profiles>
-        <profile>
+       <profile>
             <id>sonar</id>
             <properties>
                 <sonar.projectKey>alquilaya</sonar.projectKey>
                 <sonar.projectName>ICECODE - AlquilaYa</sonar.projectName>
+                
                 <sonar.host.url>http://172.20.48.132:9000/</sonar.host.url>
                 <sonar.login>grupo11</sonar.login>
                 <sonar.password>pass11</sonar.password>
                 
                 <sonar.coverage.jacoco.xmlReportPaths>target/site/jacoco/jacoco.xml</sonar.coverage.jacoco.xmlReportPaths>
                 
+                <sonar.coverage.inclusions>
+                    **/ReservaService.java
+                    **/PagoService.java,
+                    **/SecurityConfigTest.java,
+                </sonar.coverage.inclusions>
+                
                 <sonar.coverage.exclusions>
                     **/entity/**,
                     **/config/**,
                     **/dto/**,
                     **/repository/**,
+                    **/controller/**,
                     **/*Application.java
                 </sonar.coverage.exclusions>
             </properties>

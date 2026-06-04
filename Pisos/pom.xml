@@ -151,7 +151,6 @@
                 <sonar.coverage.inclusions>
                     **/ReservaService.java
                     **/PagoService.java,
-                    **/SecurityConfigTest.java,
                 </sonar.coverage.inclusions>
                 
                 <sonar.coverage.exclusions>

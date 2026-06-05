@@ -152,6 +152,7 @@
                     **/ReservaService.java
                     **/PagoService.java,
                     **/UsuarioService.java,
+                    **/InmuebleService.java,
                 </sonar.coverage.inclusions>
                 
                 <sonar.coverage.exclusions>

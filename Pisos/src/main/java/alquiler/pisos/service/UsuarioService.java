@@ -54,29 +54,30 @@ public class UsuarioService {
     }
 
     public Usuario actualizarPerfil(Long id, String nombre) {
-        Usuario usuario = usuarioRepository.findById(id)
-            .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado: " + id));
+        Usuario usuario = obtenerUsuarioValidado(id);
         usuario.setNombre(nombre);
         return usuarioRepository.save(usuario);
     }
 
     public void cambiarContrasena(Long id, String nuevaContrasena) {
-        Usuario usuario = usuarioRepository.findById(id)
-            .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado: " + id));
+        Usuario usuario = obtenerUsuarioValidado(id);
         usuario.setContrasena(passwordEncoder.encode(nuevaContrasena));
         usuarioRepository.save(usuario);
     }
 
     public void desactivarCuenta(Long id) {
-        Usuario usuario = usuarioRepository.findById(id)
-            .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado: " + id));
+        Usuario usuario = obtenerUsuarioValidado(id);
         usuario.setActivo(false);
         usuarioRepository.save(usuario);
     }
-
+    
     private void validarEmailUnico(String email) {
         if (usuarioRepository.existsByEmail(email)) {
             throw new IllegalArgumentException("El email ya está registrado: " + email);
         }
+    }
+    private Usuario obtenerUsuarioValidado(Long id) {
+        return usuarioRepository.findById(id)
+            .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado: " + id));
     }
 }

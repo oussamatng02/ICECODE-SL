@@ -26,7 +26,7 @@ public class DataLoader {
     private final UsuarioService usuarioService;
     private final InmuebleService inmuebleService;
     private final UsuarioRepository usuarioRepository;
-    private String contraseña="password123";
+    private String contrasena="password123";
     @Bean
     @Profile("!prod")   // No ejecutar en producción
     public CommandLineRunner cargarDatosDemostracion() {
@@ -37,15 +37,15 @@ public class DataLoader {
 
             // ─── Propietarios ───────────────────────────────────────
             Propietario carlos = usuarioService.registrarPropietario(
-                "Carlos Martínez", "carlos@demo.com", contraseña);
+                "Carlos Martínez", "carlos@demo.com", contrasena);
             Propietario lucia = usuarioService.registrarPropietario(
-                "Lucía Pérez", "lucia@demo.com", contraseña);
+                "Lucía Pérez", "lucia@demo.com", contrasena);
 
             // ─── Inquilinos ─────────────────────────────────────────
             usuarioService.registrarInquilino(
-                "Ana García", "ana@demo.com", contraseña);
+                "Ana García", "ana@demo.com", contrasena);
             usuarioService.registrarInquilino(
-                "Miguel Torres", "miguel@demo.com", contraseña);
+                "Miguel Torres", "miguel@demo.com", contrasena);
 
             // ─── Inmuebles de Carlos ─────────────────────────────────
             Inmueble atico = new Inmueble(

@@ -12,7 +12,6 @@ import alquiler.pisos.repository.InmuebleRepository;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Optional;
 
 /**
  * GestorInmuebles: alta de propiedades, gestión de disponibilidad y búsqueda.
@@ -34,18 +33,19 @@ public class InmuebleService {
     }
 
     public void desactivarInmueble(Long id, Propietario propietario) {
-        Inmueble inmueble = obtenerPorId(id);
-        if (!inmueble.getPropietario().getId().equals(propietario.getId())) {
-            throw new SecurityException("No tienes permiso para desactivar este inmueble");
-        }
-        inmueble.setActivo(false);
-        inmuebleRepository.save(inmueble);
+    Inmueble inmueble = obtenerInmuebleValidado(id); 
+    if (!inmueble.getPropietario().getId().equals(propietario.getId())) {
+        throw new SecurityException("No tienes permiso para desactivar este inmueble");
     }
+    inmueble.setActivo(false);
+    inmuebleRepository.save(inmueble);
+}
 
     @Transactional(readOnly = true)
     public Inmueble obtenerPorId(Long id) {
-    return inmuebleRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Inmueble no encontrado: " + id));
-}
+    return obtenerInmuebleValidado(id);
+    }
+    
 
     @Transactional(readOnly = true)
     public List<Inmueble> listarTodos() {
@@ -76,8 +76,12 @@ public class InmuebleService {
     }
 
     public Disponibilidad agregarDisponibilidad(Long inmuebleId, LocalDate inicio, LocalDate fin) {
-        Inmueble inmueble = obtenerPorId(inmuebleId);
+        Inmueble inmueble = obtenerInmuebleValidado(inmuebleId); 
         Disponibilidad disp = new Disponibilidad(inicio, fin, inmueble);
         return disponibilidadRepository.save(disp);
-    }
+}
+    private Inmueble obtenerInmuebleValidado(Long id) {
+    return inmuebleRepository.findById(id)
+        .orElseThrow(() -> new IllegalArgumentException("Inmueble no encontrado: " + id));
+}
 }

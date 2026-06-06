@@ -402,9 +402,11 @@ class ReservaServiceTest {
         @DisplayName("DEC-CP9 · C=T,D=T → C evalúa antes que D → IllegalArgumentException (anterior a la de salida)")
         void decCp9_cYd_cDomina() {
             when(inmuebleRepository.findById(any())).thenReturn(Optional.of(inmuebleInmediata));
-            // entrada=ayer, salida=ayer-1: C=T y D=T, pero C se evalúa primero
+            
+            LocalDate salidaInvalida = AYER.minusDays(1);
+            
             assertThatThrownBy(() ->
-                reservaService.crearReservaInmediata(1L, inquilino, AYER, AYER.minusDays(1)))
+                reservaService.crearReservaInmediata(1L, inquilino, AYER, salidaInvalida))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessageContaining("La fecha de entrada debe ser anterior a la de salida");
         }
@@ -556,12 +558,12 @@ class ReservaServiceTest {
 
         /** MCD-CP10 | A=T, E=T → A evalúa antes que E */
         @Test
-        @DisplayName("MCD-CP10 · A=T,E=T → A evalúa antes que E → IllegalArgumentException")
-        void mcdCp10_aYe_aAntes() {
+        @DisplayName("DEC-CP10 · todas T → A evalúa primero → IllegalArgumentException")
+        void decCp10_todasTrue_aDomina() {
             when(inmuebleRepository.findById(any())).thenReturn(Optional.empty());
-
+            LocalDate salidaInvalida = AYER.minusDays(1);
             assertThatThrownBy(() ->
-                reservaService.crearReservaInmediata(1L, inquilino, MAS5, MAS8))
+                reservaService.crearReservaInmediata(1L, inquilino, AYER, salidaInvalida))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessageContaining("Inmueble no encontrado");
         }
@@ -639,9 +641,9 @@ class ReservaServiceTest {
         @DisplayName("MCD-CP16 · todas T → A domina → IllegalArgumentException: Inmueble no encontrado")
         void mcdCp16_todasTrue_aDomina() {
             when(inmuebleRepository.findById(any())).thenReturn(Optional.empty());
-
+            LocalDate salidaInvalida = AYER.minusDays(1);
             assertThatThrownBy(() ->
-                reservaService.crearReservaInmediata(1L, inquilino, AYER, AYER.minusDays(1)))
+                reservaService.crearReservaInmediata(1L, inquilino, AYER, salidaInvalida))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessageContaining("Inmueble no encontrado");
         }

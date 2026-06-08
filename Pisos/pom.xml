@@ -67,12 +67,7 @@
             <artifactId>lombok</artifactId>
             <optional>true</optional>
         </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-devtools</artifactId>
-            <scope>runtime</scope>
-            <optional>true</optional>
-        </dependency>
+    
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
@@ -88,6 +83,19 @@
     <build>
         <plugins>
             <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <annotationProcessorPaths>
+                        <path>
+                            <groupId>org.projectlombok</groupId>
+                            <artifactId>lombok</artifactId>
+                        </path>
+                    </annotationProcessorPaths>
+                </configuration>
+            </plugin>
+            
+            <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>
@@ -99,6 +107,7 @@
                     </excludes>
                 </configuration>
             </plugin>
+            
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
@@ -107,6 +116,7 @@
                     <reportsDirectory>${project.build.directory}/surefire-reports</reportsDirectory>
                 </configuration>
             </plugin>
+            
             <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
@@ -126,11 +136,33 @@
     </build>
 
     <profiles>
-        <profile>
+       <profile>
             <id>sonar</id>
             <properties>
                 <sonar.projectKey>alquilaya</sonar.projectKey>
-                <sonar.host.url>http://localhost:9000</sonar.host.url>
+                <sonar.projectName>ICECODE - AlquilaYa</sonar.projectName>
+                
+                <sonar.host.url>http://172.20.48.132:9000/</sonar.host.url>
+                <sonar.login>grupo11</sonar.login>
+                <sonar.password>pass11</sonar.password>
+                
+                <sonar.coverage.jacoco.xmlReportPaths>target/site/jacoco/jacoco.xml</sonar.coverage.jacoco.xmlReportPaths>
+                
+                <sonar.coverage.inclusions>
+                    **/ReservaService.java
+                    **/PagoService.java,
+                    **/UsuarioService.java,
+                    **/InmuebleService.java,
+                </sonar.coverage.inclusions>
+                
+                <sonar.coverage.exclusions>
+                    **/entity/**,
+                    **/config/**,
+                    **/dto/**,
+                    **/repository/**,
+                    **/controller/**,
+                    **/*Application.java
+                </sonar.coverage.exclusions>
             </properties>
         </profile>
         <profile>
